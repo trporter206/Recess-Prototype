@@ -1,5 +1,10 @@
 package models;
 
+import exceptions.ClubAlreadyRequestedException;
+import exceptions.ClubNotRequestedException;
+import exceptions.PlayerNotFoundException;
+import exceptions.PlayerNotInClubException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +12,22 @@ public class Player {
 
     private String name;
     private int age;
+    private String city;
+    private String about;
     private int gamesPlayed;
     private List<Club> currentClubs;
     private List<Club> pendingRequests;
+    private int numHostedGames;
 
-    public Player(String name, int age) {
+    public Player(String name, int age, String city) {
         this.name = name;
         this.age = age;
-        this.gamesPlayed = 0;
+        this.city = city;
+        this.about = "";
         this.currentClubs = new ArrayList<>();
         this.pendingRequests = new ArrayList<>();
+        this.gamesPlayed = 0;
+        this.numHostedGames = 0;
     }
 
     //GETTERS=====================================
@@ -40,6 +51,18 @@ public class Player {
         return pendingRequests;
     }
 
+    public int getNumHostedGames() {
+        return numHostedGames;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
     //SETTERS=====================================
     public void setAge(int age) {
         this.age = age;
@@ -61,20 +84,36 @@ public class Player {
         this.pendingRequests = pendingRequests;
     }
 
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setNumHostedGames(int numHostedGames) {
+        this.numHostedGames = numHostedGames;
+    }
+
     //METHODS=====================================
 
-    //REQUIRES: club is not already in requests
     //MODIFIES: this, club
     //EFFECTS: adds player request to join given club
-    public void requestJoinClub(Club club) {
+    public void requestJoinClub(Club club) throws ClubAlreadyRequestedException {
+        if (this.pendingRequests.contains(club)) {
+            throw new ClubAlreadyRequestedException(club);
+        }
         club.newRequest(this);
         this.pendingRequests.add(club);
     }
 
-    //REQUIRES: player is member of given club
     //MODIFIES: this, club
     //EFFECTS: removes player from given club
-    public void leaveClub(Club club) {
+    public void leaveClub(Club club) throws PlayerNotInClubException, PlayerNotFoundException {
+        if (!this.currentClubs.contains(club)) {
+            throw new PlayerNotInClubException(club);
+        }
         this.currentClubs.remove(club);
         club.removePlayer(this);
     }
@@ -85,10 +124,12 @@ public class Player {
         this.gamesPlayed++;
     }
 
-    //REQUIRES: club in joinRequests
     //MODIFIES: this
     //EFFECTS: when request is accepted/declined, remove club from requests
-    public void removeRequest(Club club) {
+    public void removeRequest(Club club) throws ClubNotRequestedException {
+        if (!this.pendingRequests.contains(club)) {
+            throw new ClubNotRequestedException(club);
+        }
         this.pendingRequests.remove(club);
     }
 

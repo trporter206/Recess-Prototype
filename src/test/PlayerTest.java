@@ -1,7 +1,7 @@
 package test;
 
 import models.Club;
-import models.Game;
+import models.MeetUp;
 import models.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +14,8 @@ public class PlayerTest {
 
     @BeforeEach
     void setUp() {
-        player = new Player("Torri", 27);
-        club = new Club("Sports Club", Game.GameType.ALL);
+        player = new Player("Torri", 27, "Vancouver");
+        club = new Club("Sports Club", MeetUp.MeetUpType.ALL, player, false);
     }
 
     @Test

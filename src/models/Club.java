@@ -1,24 +1,35 @@
 package models;
 
+import exceptions.ClubNotRequestedException;
+import exceptions.PlayerNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Club {
 
     private String name;
+    private Player creator;
+    private String about;
+    private String preReqs;
+    private boolean needPreReqs;
+    private boolean privateClub;
     private int numMembers;
     private List<Player> joinRequests;
     private List<Player> members;
+    private List<MeetUp> scheduledMeetUpd;
     private int totalClubGames;
-    private Game.GameType type;
+    private MeetUp.MeetUpType type;
 
-    public Club(String name, Game.GameType type) {
+    public Club(String name, MeetUp.MeetUpType type, Player creator, boolean privateClub) {
         this.name = name;
         this.type = type;
-        this.numMembers = 0;
+        this.creator = creator;
+        this.numMembers = 1;
         this.totalClubGames = 0;
         this.joinRequests = new ArrayList<>();
         this.members = new ArrayList<>();
+        this.members.add(creator);
     }
 
     //GETTERS====================================
@@ -42,7 +53,7 @@ public class Club {
         return totalClubGames;
     }
 
-    public Game.GameType getType() {
+    public MeetUp.MeetUpType getType() {
         return type;
     }
 
@@ -51,7 +62,7 @@ public class Club {
         this.name = name;
     }
 
-    public void setType(Game.GameType type) {
+    public void setType(MeetUp.MeetUpType type) {
         this.type = type;
     }
 
@@ -73,10 +84,12 @@ public class Club {
 
     //METHODS=====================================
 
-    //REQUIRES: player is in joinRequests
     //MODIFIES: this, player
     //EFFECTS: if accepted, add given player to members. Remove from joinRequests
-    public boolean addMember(Player player, boolean accepted) {
+    public boolean addMember(Player player, boolean accepted) throws PlayerNotFoundException, ClubNotRequestedException {
+        if (!this.members.contains(player)) {
+            throw new PlayerNotFoundException(player);
+        }
         if (accepted) {
             this.members.add(player);
             this.joinRequests.remove(player);
@@ -90,10 +103,12 @@ public class Club {
         }
     }
 
-    //REQUIRES: player is member
     //MODIFIES: this, player
     //EFFECTS: removes player from members list
-    public void removePlayer(Player player) {
+    public void removePlayer(Player player) throws PlayerNotFoundException {
+        if (!this.members.contains(player)) {
+            throw new PlayerNotFoundException(player);
+        }
         this.members.remove(player);
     }
 
