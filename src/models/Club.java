@@ -87,7 +87,7 @@ public class Club {
     //MODIFIES: this, player
     //EFFECTS: if accepted, add given player to members. Remove from joinRequests
     public boolean addMember(Player player, boolean accepted) throws PlayerNotFoundException, ClubNotRequestedException {
-        if (!this.members.contains(player)) {
+        if (!this.joinRequests.contains(player)) {
             throw new PlayerNotFoundException(player);
         }
         if (accepted) {
